@@ -1,5 +1,3 @@
-
-import argparse
 from random_password_generator import generate_password
 
 def main():
