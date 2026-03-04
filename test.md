@@ -1,4 +1,3 @@
-
 # Gateway.md
 
 ## Overview
@@ -16,6 +15,20 @@
 | Main API / Gateway core | `agx/app/main.py`, `agx/app/core/gateway.py` |
 | SQS Email consumer | `agx/run_sqs_consumer.py` |
 | Env & build | `agx/.env.gateway`, `agx/Dockerfile` |
+
+## Main Gateway Channels - Implemented & Route Files
+
+| Channel | Purpose | Route/Handler File | Key Functions |
+|---------|---------|-------------------|---------------|
+| **Slack** | Handles Slack app creation, OAuth flow, and webhook events | `agx/app/channels/slack/slack_app_creation_ui.py`<br>`agx/app/webhooks/slack_webhook.py` | App creation UI, OAuth callback, event subscription handling |
+| **WhatsApp** | Manages WhatsApp app creation using Twilio credentials | `agx/app/channels/whatsapp/whatsapp_app_creation_ui.py`<br>`agx/app/webhooks/whatsapp_webhook.py` | Twilio credential storage, phone number configuration, webhook handling |
+| **Telegram** | Handles Telegram bot creation and webhook setup | `agx/app/channels/telegram/telegram_app_creation_ui.py`<br>`agx/app/webhooks/telegram_webhook.py` | Bot token validation, webhook URL configuration, message handling |
+| **Email** | Processes inbound emails via SQS and SES | `agx/app/webhooks/email_channel.py`<br>`agx/run_sqs_consumer.py` | SQS consumption, email parsing, attachment handling, forwarding to agents |
+| **Triggers** | Manages cron, once, and webhook triggers for scheduled agent execution | `agx/app/channels/trigger/trigger_router.py` | Trigger creation, scheduling, execution history, webhook endpoints |
+| **Moltbook** | Handles Moltbook social platform agent registration and posting | `agx/app/channels/moltbook/moltbook_registration.py`<br>`agx/app/channels/moltbook/moltbook_heartbeat_service.py` | Agent registration, claim flow, daily posting, mention handling |
+| **Chrome Extension** | Browser extension channel for agent interaction | `agx/app/channels/chrome_extension/chrome_extension_app_creation.py` | Extension configuration, API key management, agent association |
+| **Cursor/MCP** | MCP tools for agent management via Cursor IDE | `agx/app/services/gateway_mcp/mcp.py` | Trigger management, app creation, extension generation |
+
 
 ## High-level flow
 
@@ -53,6 +66,14 @@
 
 - **Local env:** Copy example env:
 - **Key env vars:** `BASE_URL` (used by MCP tools), `AGX_BASE_URL`, `AGX_API_KEY`, Redis connection, DB URL. Confirm values in `agx/.env.gateway` and other `.env` files.
-- **Sensitive keys:** Slack app tokens/signing secrets are stored encrypted in DB; decryption requires the key handling configured by `SlackBotConfigService`. Slack-created app keys may also depend on `slack_app_encryption.key` when used by utilities that decrypt stored masked keys (in Event Processor).
+- **Sensitive keys:** Slack app tokens/signing secrets are stored encrypted in DB; decryption requires the key handling configured by `SlackBotConfigService`. Slack-created app keys may also depend on `slack_app_encryption.key` when used by utilities that decrypt stored masked keys (see Event Processor).
 - **Database & migrations:** Use Alembic in `agx/alembic/` with `alembic.ini` for schema migrations.
 
+## Run & debug (developer quick commands)
+
+**Python venv and deps:**
+
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
