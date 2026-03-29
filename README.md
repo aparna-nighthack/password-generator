@@ -1,3 +1,1 @@
-# password-generator
-
-The goal is to create a command-line tool that generates random, secure passwords. 
+I'm here to help! How can I assist you today with your code or project?
