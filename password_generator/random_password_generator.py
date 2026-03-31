@@ -1,21 +1,24 @@
-
-import string
 import secrets
+import random
 
 def generate_password(length=12):
-    """
-    Generates a random, secure password combining letters, digits, and punctuation.
+    if length < 5:
+        raise ValueError("Password length must be at least 5 to accommodate the required character types.")
+
+    alphabetic_characters = string.ascii_letters
+    numeric_characters = string.digits
+    all_characters = string.ascii_letters + string.digits + string.punctuation
     
-    Args:
-    - length (int): The length of the password to generate. Default is 12.
+    password_chars = random.choices(alphabetic_characters, k=3) + random.choices(numeric_characters, k=2)
     
-    Returns:
-    - str: The generated password.
-    """
-    # Define the characters to use in the password
-    characters = string.ascii_letters + string.digits + string.punctuation
+    remaining_length = length - len(password_chars)
+    password_chars += random.choices(all_characters, k=remaining_length)
     
-    # Securely generate a random password
-    password = ''.join(secrets.choice(characters) for i in range(length))
+    random.shuffle(password_chars)
+    
+    password = ''.join(password_chars)
     
     return password
+
+if __name__ == "__main__":
+    print(generate_password(12))
