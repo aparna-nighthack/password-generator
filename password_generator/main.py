@@ -1,6 +1,5 @@
-
-import argparse
 from random_password_generator import generate_password
+from password_validator import validate_password
 
 def main():
     parser = argparse.ArgumentParser(description="Generate a secure, random password.")
@@ -11,7 +10,10 @@ def main():
     
     try:
         password = generate_password(password_length)
-        print(f"Generated Password: {password}")
+        if validate_password(password):
+            print(f"Generated Password: {password}")
+        else:
+            print("Generated password did not meet the validation criteria.")
     except Exception as e:
         print(f"Error generating password: {e}")
 
